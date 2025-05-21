@@ -45,20 +45,20 @@ jobs:
         - "3.8"
         - "3.12"
         platform:
-        - ubuntu-latest
-        - macos-latest
-        - windows-latest
+        - ubuntu-22.04
+        - macos-14
+        - windows-2022
         include:
         - python: "3.9"
-          platform: ubuntu-latest
+          platform: ubuntu-22.04
         - python: "3.10"
-          platform: ubuntu-latest
+          platform: ubuntu-22.04
         - python: "3.11"
-          platform: ubuntu-latest
+          platform: ubuntu-22.04
         - python: pypy3.10
-          platform: ubuntu-latest
+          platform: ubuntu-22.04
           distutils: stdlib
-        - platform: ubuntu-latest
+        - platform: ubuntu-22.04
           python: "3.10"
           distutils: stdlib
     runs-on: ${{ matrix.platform }}
@@ -70,7 +70,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Setup Python
         id: python-install
-        uses: actions/setup-python@v5
+        uses: MatteoH2O1999/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
           allow-prereleases: true
@@ -121,13 +121,13 @@ jobs:
         job:
         - diffcov
         - docs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: MatteoH2O1999/setup-python@v4
         with:
           python-version: 3.x
       - name: Install tox
@@ -144,7 +144,7 @@ jobs:
     - collateral
     - test_cygwin
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Decide whether the needed jobs succeeded or failed
@@ -159,7 +159,7 @@ jobs:
         python:
         - 39
         platform:
-        - windows-latest
+        - windows-2022
     runs-on: ${{ matrix.platform }}
     timeout-minutes: 75
     steps:
@@ -216,7 +216,7 @@ jobs:
     #    already tested via unit tests (or other tests not classified here as
     #    "integration")
     # With that in mind, the integration tests can run for a single setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
@@ -225,7 +225,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install build-essential gfortran libopenblas-dev libyaml-dev
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: MatteoH2O1999/setup-python@v4
         with:
           # Use a release that is not very new but still have a long life:
           python-version: "3.10"
@@ -241,12 +241,12 @@ jobs:
     needs:
     - check
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: MatteoH2O1999/setup-python@v4
         with:
           python-version: 3.x
       - name: Install tox

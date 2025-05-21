@@ -55,7 +55,7 @@ env:
 jobs:
 
   dist:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out ${{ env.SPKG }}
         uses: actions/checkout@v4

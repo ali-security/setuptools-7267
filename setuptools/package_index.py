@@ -814,10 +814,25 @@ class PackageIndex(Environment):
             else:
                 raise DistutilsError("Download error for %s: %s" % (url, v)) from v
 
-    def _download_url(self, scheme, url, tmpdir):
-        # Determine download filename
-        #
-        name, fragment = egg_info_for_url(url)
+    @staticmethod
+    def _resolve_download_filename(url, tmpdir):
+        """
+        >>> import pathlib
+        >>> du = PackageIndex._resolve_download_filename
+        >>> root = getfixture('tmp_path')
+        >>> url = 'https://files.pythonhosted.org/packages/a9/5a/0db.../setuptools-78.1.0.tar.gz'
+        >>> str(pathlib.Path(du(url, root)).relative_to(root))
+        'setuptools-78.1.0.tar.gz'
+
+        Ensures the target is always in tmpdir.
+
+        >>> url = 'https://anyhost/%2fhome%2fuser%2f.ssh%2fauthorized_keys'
+        >>> du(url, root)
+        Traceback (most recent call last):
+        ...
+        ValueError: Invalid filename...
+        """
+        name, _fragment = egg_info_for_url(url)
         if name:
             while '..' in name:
                 name = name.replace('..', '.').replace('\\', '_')
@@ -828,6 +843,17 @@ class PackageIndex(Environment):
             name = name[:-4]  # strip the extra .zip before download
 
         filename = os.path.join(tmpdir, name)
+
+        # ensure path resolves within the tmpdir
+        if not filename.startswith(str(tmpdir)):
+            raise ValueError(f"Invalid filename {filename}")
+
+        return filename
+
+    def _download_url(self, scheme, url, tmpdir):
+        # Determine download filename
+        #
+        filename = self._resolve_download_filename(url, tmpdir)
 
         # Download the file
         #
